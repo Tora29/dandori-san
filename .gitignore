@@ -1,0 +1,37 @@
+# ---- macOS ----
+# Finder が自動で作るファイル
+.DS_Store
+
+# ---- IDE ----
+# エディタごとの設定
+.zed
+.vscode
+.idea/
+
+# ---- 秘密の値 ----
+# 基本的にコミットしない。
+.env
+.env.*
+!.env.example
+# Cloudflare Workers の手元用の秘密の値（wrangler dev が読む）
+.dev.vars
+.dev.vars.*
+!.dev.vars.example
+
+# ---- Node / Cloudflare Workers ----
+node_modules/
+.wrangler/
+.svelte-kit/
+build/
+dist/
+coverage/
+
+# ---- テスト ----
+test-results/
+playwright-report/
+
+# ---- ログ ----
+*.log
+
+# ---- 個人の作業用ファイル ----
+.claude/users/
