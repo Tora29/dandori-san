@@ -7,8 +7,8 @@
 
 グループ旅行の当日に、みんなが迷わないしおり。
 幹事がしおりを作ってリンクを配ると、リンクを知っている人はだれでも、登録もアプリも無しで見て書ける。
-予定が変わったら、直した人が LINE で知らせる。
-しおりは、旅行の最終日から1か月で自動で消える。
+予定が変わったら、直した人がスマホの共有の画面から、LINE などでみんなに知らせる。
+しおりは、旅行の最終日から3か月で自動で消える。
 
 ## 技術スタック
 
@@ -20,11 +20,12 @@
 | マイグレーション | wrangler の D1 マイグレーション |
 | 設定 | `wrangler.jsonc`（D1・Cron・独自ドメイン・環境） |
 | 自動削除 | 削除だけをする小さな Worker（Cron で1日1回） |
-| LINE で知らせる | LINE の URL（`https://line.me/R/share?text=…`）を開くだけ |
+| みんなに知らせる | スマホの共有の画面（`navigator.share`）を開く。送る文は段取りさんが作る。開けないブラウザでは、送る文をコピーする |
 | 電波がないとき | SvelteKit の Service Worker |
 | テスト | Vitest、`@cloudflare/vitest-plugin`、Playwright、axe |
 | 公開 | GitHub Actions から wrangler で |
 | ドメイン | `dandori-san.com` |
+| 問い合わせ | Cloudflare Email Routing（`dandori-san.com` のアドレスに来たメールを、自分のメールに転送する） |
 
 使う版は、2026-10 時点の SvelteKit 3.0 系、`@sveltejs/adapter-cloudflare` 8 系、Svelte 5（5.57 以上）、Vite 8、wrangler 4 系。
 版を上げるかは人が決める。

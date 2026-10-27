@@ -5,55 +5,81 @@ SvelteKit と Svelte のコードを書くときの決まり。
 2章から下は、段取りさんの作りとして決めたこと。
 D1・リンク・回数の上限・自動削除・最新を取り直すとき・電波がないとき・wrangler の設定は [Cloudflare の約束事](cloudflare.md) に書く。
 
-## 1. AI が出しやすい古い書き方
+## 1. SvelteKit 3・Svelte 5 の書き方
 
-SvelteKit 3 は 2026-10-01 に出たばかりで、AI は SvelteKit 2 や Svelte 4 の書き方をよく混ぜる。
-SvelteKit 2 の書き方は、3 ではもう動かない。
-Svelte 4 の書き方は、runes を使う設定（下）にするとエラーになる。
-迷ったら、[Svelte の公式ドキュメント](https://svelte.dev/docs) と [SvelteKit 3 への移行の案内](https://svelte.dev/docs/kit/migrating-to-sveltekit-3) で確かめる。
+段取りさんは SvelteKit 3 と Svelte 5（runes）だけで書く。
+各表の「使わない」は前の版の書き方で、動かないかエラーになる。
+覚えている書き方が「使わない」の列にあったら、「使う」の列に直してから書く。
+表に無いことは、推測で書かずに [Svelte の公式ドキュメント](https://svelte.dev/docs) で確かめる。
 
-### SvelteKit 2 → 3
+### 設定とファイルの置き場所
 
-| 古い（使わない） | 今 |
+| 使う | 使わない |
 | --- | --- |
-| `$lib/foo` | `#lib/foo.js`（拡張子まで書く。`package.json` の `imports` に `#lib` と `#lib/*` を書いておく） |
-| `svelte.config.js` に書く設定 | `vite.config.ts` の `sveltekit({ … })` に書く（`kit` の中にあった設定は、一段上に出す） |
-| `$app/stores` の `$page`・`$navigating` | `$app/state` の `page`・`navigating`（`$` を付けない） |
-| `$app/environment` | `$app/env` |
-| `$env/static/private` などの `$env/…` | `$app/env/private`・`$app/env/public` |
-| `$app/paths` の `base`・`assets` | `resolve()`・`asset()`（引数の頭に `/` を付けない） |
-| `invalidateAll()`・`goto` の `invalidateAll` | `refreshAll()`・`goto` の `refreshAll` |
-| `json(…)`・`text(…)`（`@sveltejs/kit`） | `Response.json(…)`・`new Response(…)` |
-| `error(404, { message: … })` | 2つ目は文字列だけ。ほかの値は3つ目に渡す |
-| `src/params/` に置く matcher | `src/params.ts` に `defineParams` で書く |
-| `data-sveltekit-*="off"` | `false` |
-| `$service-worker` の `build`・`files`・`version` | `$app/manifest` の `immutable`・`assets`、`$app/env` の `version`、`$app/paths` の `resolve`、`$app/service-worker` の `self` |
-| `event.platform.env.DB`（Cloudflare の環境） | `import { env } from "cloudflare:workers"` |
+| `vite.config.ts` の `sveltekit({ … })` に書く（`kit` の中に書いていた設定も、ここに直接書く） | `svelte.config.js` |
+| `src/params.ts` に `defineParams` で書く | `src/params/` に置く matcher |
 
-### Svelte 4 → 5
-
-| 古い（使わない） | 今 |
-| --- | --- |
-| `export let name` | `let { name } = $props()` |
-| `let count = 0`（それだけで画面が変わる変数） | `let count = $state(0)` |
-| `$: double = count * 2` | `let double = $derived(count * 2)` |
-| `$: { … }`（変わったら動く処理） | `$effect(() => { … })`。ただし、ほとんどは `$derived` で足りる。`$effect` の中で state を書き換えない |
-| `on:click={…}` | `onclick={…}` |
-| `on:click\|preventDefault` | `onclick` の中で `event.preventDefault()` を呼ぶ |
-| `createEventDispatcher` | 関数を `$props` で受け取る |
-| 子の `<slot />` | 子の `{@render children?.()}` |
-| 子の `<slot name="x" />`・親の `<div slot="x">` | 子の `{@render x?.()}`・親の `{#snippet x()}` |
-
-- すべての部品で runes の書き方にする。
+- すべての部品を runes で書く。
   `vite.config.ts` の `sveltekit({ compilerOptions })` で、自分のファイルだけ runes にする。
-  `runes: true` と書くと、`node_modules` の中の Svelte 4 の部品まで runes として読まれて壊れる
+  `runes: true` と書くと、`node_modules` の中の古い部品まで runes として読まれて壊れる
 
   ```ts
   runes: ({ filename }) =>
     filename.split(/[/\\]/).includes('node_modules') ? undefined : true
   ```
 
-- `remote functions` は、3.0 の時点で試験的な機能なので使わない
+### import
+
+| 使う | 使わない |
+| --- | --- |
+| `#lib/foo.js`（拡張子まで書く。`package.json` の `imports` に `#lib` と `#lib/*` を書いておく） | `$lib/foo` |
+| `$app/state` の `page`・`navigating`（`$` を付けない） | `$app/stores` の `$page`・`$navigating` |
+| `$app/env` | `$app/environment` |
+| `$app/env/private`・`$app/env/public` | `$env/static/private` などの `$env/…` |
+| `import { env } from "cloudflare:workers"` | `event.platform.env.DB` |
+
+### 部品の書き方
+
+| 使う | 使わない |
+| --- | --- |
+| `let { name } = $props()` | `export let name` |
+| `let count = $state(0)` | `let count = 0`（それだけで画面が変わる変数） |
+| `let double = $derived(count * 2)` | `$: double = count * 2` |
+| `$effect(() => { … })` | `$: { … }`（変わったら動く処理） |
+| `onclick={…}` | `on:click={…}` |
+| `onclick` の中で `event.preventDefault()` を呼ぶ | `on:click\|preventDefault` |
+| 関数を `$props` で受け取る | `createEventDispatcher` |
+| 子の `{@render children?.()}` | 子の `<slot />` |
+| 子の `{@render x?.()}`・親の `{#snippet x()}` | 子の `<slot name="x" />`・親の `<div slot="x">` |
+
+- `$effect` はほとんど要らない。
+  ほかの値から決まる値は `$derived` で書く。
+  `$effect` の中で state を書き換えない
+
+### ページの移動と取り直し
+
+| 使う | 使わない |
+| --- | --- |
+| `$app/paths` の `resolve()`・`asset()`（引数の頭に `/` を付けない） | `$app/paths` の `base`・`assets` |
+| `refreshAll()`・`goto` の `refreshAll` | `invalidateAll()`・`goto` の `invalidateAll` |
+| `data-sveltekit-*` に `false` を書く | `data-sveltekit-*="off"` |
+
+### 応答とエラー
+
+| 使う | 使わない |
+| --- | --- |
+| `Response.json(…)`・`new Response(…)` | `@sveltejs/kit` の `json(…)`・`text(…)` |
+| `error(404, '見つかりません')`（2つ目は文字列だけ。ほかの値は3つ目に渡す） | `error(404, { message: … })` |
+
+### Service Worker
+
+| 使う | 使わない |
+| --- | --- |
+| `$app/manifest` の `immutable`・`assets`、`$app/env` の `version`、`$app/paths` の `resolve`、`$app/service-worker` の `self` | `$service-worker` の `build`・`files`・`version` |
+
+### 使わない機能
+
+- `remote functions` は試験的な機能なので使わない
 
 ## 2. JS が無くても動く形にする
 
