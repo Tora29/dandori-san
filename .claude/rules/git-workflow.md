@@ -32,8 +32,8 @@ Conventional Commits形式で書く。
 | chore | 上記以外の雑務（依存関係の更新など） |
 
 - scope は画面か機能の名前
-  - 画面：`start`（はじめに）/ `create`（しおりを作る）/ `plan`（予定・集合を書く）/ `day`（当日の画面）/ `notify`（LINE で知らせる）/ `items`（持ち物）/ `split`（割り勘）
-  - 画面をまたぐもの：`theme`（色・文字などのトークン）/ `refresh`（最新の取り直し）/ `offline`（電波がないとき・Service Worker）/ `db`（D1・マイグレーション）/ `cleanup`（自動削除の Worker）等
+  - 画面：`start`（はじめに）/ `create`（しおりを作る）/ `join`（名前を入れる）/ `plan`（予定。旅行の前と当日）/ `items`（持ち物）/ `split`（割り勘）
+  - 画面をまたぐもの：`theme`（色・文字などのトークン）/ `notify`（みんなに知らせる）/ `print`（印刷・PDF）/ `refresh`（最新の取り直し）/ `offline`（電波がないとき・Service Worker）/ `db`（D1・マイグレーション）/ `cleanup`（自動削除の Worker）等
   - Repository全体の設定・ルール：`repo`
 - 内容は日本語で簡潔に書く
 
@@ -45,8 +45,8 @@ Conventional Commits形式で書く。
 この部分がActivityの見出しになる。
 
 ```text
-○ feat(day): 集合の時間が変わったら当日の画面で変わる前と後を並べて見せる
-○ fix(notify): LINE に送る文に変更前の時刻が入らない問題を修正
+○ feat(plan): 集合の時間が変わったら当日の予定で変わる前と後を並べて見せる
+○ fix(notify): みんなに送る文に変更前の時刻が入らない問題を修正
 × feat(refresh): visibilitychange で refreshAll を呼ぶ    # 実装の言葉になっている
 × fix: いろいろ修正                                    # 何をしたか分からない
 ```
@@ -57,7 +57,7 @@ Conventional Commits形式で書く。
 何を変えて、使う人にとって何が良くなったかを1〜2文で書く。
 
 ```markdown
-集合の時間や場所が変わったとき、当日の画面で古い値に二重線を引き、新しい値を朱で見せるようにした。LINE を遡らなくても、最新の集合が分かる。
+集合の時間や場所が変わったとき、当日の予定で古い値に二重線を引き、新しい値を朱で見せるようにした。LINE を遡らなくても、最新の集合が分かる。
 
 ## 変更内容
 - …
