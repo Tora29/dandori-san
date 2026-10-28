@@ -1,0 +1,30 @@
+# PR と main への push で、型・lint・テストを確かめる
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    # ブラウザと OS の部品が入った Playwright のイメージで動かす。
+    # 版は package.json の @playwright/test とそろえる（ずれるとブラウザが見つからずに落ちる）
+    container:
+      image: mcr.microsoft.com/playwright:v1.64.1-noble
+    env:
+      WRANGLER_SEND_METRICS: false
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .node-version
+          cache: npm
+      - run: npm ci
+      - run: npm run check
+      - run: npm run lint
+      - run: npm test

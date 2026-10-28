@@ -1,0 +1,73 @@
+/* すべての画面の土台。値は tokens.css の変数だけを使う
+   見た目の決まりは .claude/rules/design-principles.md、アクセシビリティは accessibility.md
+   動きは付けない（design-principles.md 4章） */
+
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
+
+body {
+	margin: 0;
+	background: var(--md-sys-color-surface);
+	color: var(--md-sys-color-on-surface);
+	font: var(--md-body-large);
+	-webkit-font-smoothing: antialiased;
+	-webkit-text-size-adjust: 100%;
+	text-size-adjust: 100%;
+}
+
+[hidden] {
+	display: none !important;
+}
+
+button {
+	font: inherit;
+	color: inherit;
+	background: none;
+	border: 0;
+	padding: 0;
+	cursor: pointer;
+}
+
+p,
+h1,
+h2,
+h3,
+ol,
+ul {
+	margin: 0;
+	padding: 0;
+}
+
+ol,
+ul {
+	list-style: none;
+}
+
+/* フォーカスの線：地の色と 3:1 以上、2px（accessibility.md 6章） */
+:focus-visible {
+	outline: 2px solid var(--md-sys-color-primary);
+	outline-offset: 2px;
+}
+
+/* 数字は桁をそろえる（design-principles.md 7章） */
+.num {
+	font-variant-numeric: tabular-nums;
+}
+
+/* 見た目には出さず、読み上げにだけ伝える */
+.sr-only {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+	clip-path: inset(50%);
+	white-space: nowrap;
+}
+
+/* 言葉のまとまりの途中で折り返さない（design-principles.md 8章） */
+.nb {
+	display: inline-block;
+}
