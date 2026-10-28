@@ -1,0 +1,157 @@
+/* 段取りさんのデザイントークン
+   決まりは Material 3 から借りる（design-principles.md 2章）。部品集は使わない。
+   色は、基本の色 #3d6a9e から Material 3 のやり方（TonalSpot）で作った。
+   追加の色：changed（朱 #d9480f）＝変わった、now（緑 #2e7d4f）＝いま。
+   基本の色を変えるときは、全部の役割を作り直し、下の比も測り直す。
+
+   コントラスト比（accessibility.md 1章。2026-10-28 に測った）
+   面は surface / surface-container-lowest / surface-container / surface-container-highest の順
+                         ライト                      ダーク
+   on-surface            16.27 17.10 14.64 13.23     14.29 14.95 12.65 9.52
+   on-surface-variant     8.88  9.33  7.99  7.22     10.82 11.32  9.58 7.21
+   primary                6.16  6.47  5.54  5.01     10.84 11.34  9.59 7.22
+   changed                6.15  6.46  5.53  5.00     10.87 11.37  9.62 7.24
+   now                    6.14  6.45  5.53  4.99     10.87 11.38  9.63 7.25
+   error                  6.15  6.46  5.53  5.00     10.88 11.38  9.63 7.25
+   outline（部品の枠）     4.28  4.49  3.85  3.48      5.84  6.11  5.17 3.89
+   on-primary / primary                  6.47        7.67
+   on-error / error                      6.46        7.72
+   on-primary-container / 同 container   7.29        7.29
+   on-changed-container / 同 container  13.34        7.26
+   on-now-container / 同 container      13.31        7.26
+   inverse-on-surface / inverse-surface 11.62       10.21
+   inverse-primary / inverse-surface     7.75        5.01
+   outline-variant は飾りの線にだけ使う（部品の形には outline を使う） */
+
+:root {
+	color-scheme: light dark;
+
+	/* ---------- 色：ライト ---------- */
+	--md-sys-color-primary: #39608f;
+	--md-sys-color-on-primary: #ffffff;
+	--md-sys-color-primary-container: #d3e4ff;
+	--md-sys-color-on-primary-container: #1d4875;
+	--md-sys-color-secondary: #545f70;
+	--md-sys-color-on-secondary: #ffffff;
+	--md-sys-color-secondary-container: #d7e3f8;
+	--md-sys-color-on-secondary-container: #3c4858;
+	--md-sys-color-tertiary: #6c5677;
+	--md-sys-color-on-tertiary: #ffffff;
+	--md-sys-color-tertiary-container: #f4d9ff;
+	--md-sys-color-on-tertiary-container: #533f5f;
+	--md-sys-color-error: #ba1a1a;
+	--md-sys-color-on-error: #ffffff;
+	--md-sys-color-error-container: #ffdad6;
+	--md-sys-color-on-error-container: #93000a;
+	--md-sys-color-surface: #f8f9ff;
+	--md-sys-color-on-surface: #191c20;
+	--md-sys-color-on-surface-variant: #43474e;
+	--md-sys-color-surface-container-lowest: #ffffff;
+	--md-sys-color-surface-container-low: #f2f3fa;
+	--md-sys-color-surface-container: #ecedf4;
+	--md-sys-color-surface-container-high: #e7e8ee;
+	--md-sys-color-surface-container-highest: #e1e2e8;
+	--md-sys-color-outline: #73777f;
+	--md-sys-color-outline-variant: #c3c6cf;
+	--md-sys-color-inverse-surface: #2e3035;
+	--md-sys-color-inverse-on-surface: #eff0f7;
+	--md-sys-color-inverse-primary: #a2c9fe;
+	--md-sys-color-scrim: #000000;
+	--md-ext-changed: #ad3300;
+	--md-ext-on-changed: #ffffff;
+	--md-ext-changed-container: #ffdbd0;
+	--md-ext-on-changed-container: #390b00;
+	--md-ext-now: #006d3d;
+	--md-ext-on-now: #ffffff;
+	--md-ext-now-container: #97f7b6;
+	--md-ext-on-now-container: #00210f;
+
+	/* ---------- 文字（Material 3 の段階） ----------
+	   端末の文字を使う。Web フォントは読み込まない（design-principles.md 5章）。
+	   大きさは rem で書き、端末の文字の大きさに合わせて伸びるようにする（accessibility.md 3章）。
+	   日本語なので、本文の行の高さは少し広げている */
+	--md-font:
+		system-ui, -apple-system, 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP',
+		'Yu Gothic UI', sans-serif;
+	--md-display-small: 400 2.25rem/2.75rem var(--md-font);
+	--md-headline-large: 400 2rem/2.5rem var(--md-font);
+	--md-headline-medium: 400 1.75rem/2.25rem var(--md-font);
+	--md-headline-small: 400 1.5rem/2rem var(--md-font);
+	--md-title-large: 400 1.375rem/1.75rem var(--md-font);
+	--md-title-medium: 500 1rem/1.5rem var(--md-font);
+	--md-title-small: 500 0.875rem/1.25rem var(--md-font);
+	--md-body-large: 400 1rem/1.625rem var(--md-font);
+	--md-body-medium: 400 0.875rem/1.375rem var(--md-font);
+	--md-body-small: 400 0.75rem/1.125rem var(--md-font);
+	--md-label-large: 500 0.875rem/1.25rem var(--md-font);
+	--md-label-medium: 500 0.75rem/1rem var(--md-font);
+	--md-label-small: 500 0.6875rem/1rem var(--md-font);
+
+	/* ---------- 余白（4 の倍数） ---------- */
+	--space-1: 4px;
+	--space-2: 8px;
+	--space-3: 12px;
+	--space-4: 16px;
+	--space-5: 20px;
+	--space-6: 24px;
+	--space-8: 32px;
+	--space-10: 40px;
+	--gutter: var(--space-4);
+	--touch-min: 48px;
+
+	/* ---------- 角の丸み（Material 3 の shape） ---------- */
+	--shape-xs: 4px;
+	--shape-sm: 8px;
+	--shape-md: 12px;
+	--shape-lg: 16px;
+	--shape-xl: 28px;
+	--shape-full: 999px;
+
+	/* ---------- 押している間・マウスを乗せたときの、うすい重ね ---------- */
+	--state-hover: 0.08;
+	--state-pressed: 0.1;
+}
+
+/* ---------- 色：ダーク（端末の設定に合わせる。色の意味は変えない） ---------- */
+@media (prefers-color-scheme: dark) {
+	:root {
+		--md-sys-color-primary: #a2c9fe;
+		--md-sys-color-on-primary: #00325b;
+		--md-sys-color-primary-container: #1d4875;
+		--md-sys-color-on-primary-container: #d3e4ff;
+		--md-sys-color-secondary: #bbc7db;
+		--md-sys-color-on-secondary: #263141;
+		--md-sys-color-secondary-container: #3c4858;
+		--md-sys-color-on-secondary-container: #d7e3f8;
+		--md-sys-color-tertiary: #d8bde3;
+		--md-sys-color-on-tertiary: #3c2947;
+		--md-sys-color-tertiary-container: #533f5f;
+		--md-sys-color-on-tertiary-container: #f4d9ff;
+		--md-sys-color-error: #ffb4ab;
+		--md-sys-color-on-error: #690005;
+		--md-sys-color-error-container: #93000a;
+		--md-sys-color-on-error-container: #ffdad6;
+		--md-sys-color-surface: #111418;
+		--md-sys-color-on-surface: #e1e2e8;
+		--md-sys-color-on-surface-variant: #c3c6cf;
+		--md-sys-color-surface-container-lowest: #0b0e13;
+		--md-sys-color-surface-container-low: #191c20;
+		--md-sys-color-surface-container: #1d2024;
+		--md-sys-color-surface-container-high: #272a2f;
+		--md-sys-color-surface-container-highest: #32353a;
+		--md-sys-color-outline: #8d9199;
+		--md-sys-color-outline-variant: #43474e;
+		--md-sys-color-inverse-surface: #e1e2e8;
+		--md-sys-color-inverse-on-surface: #2e3035;
+		--md-sys-color-inverse-primary: #39608f;
+		--md-sys-color-scrim: #000000;
+		--md-ext-changed: #ffb59e;
+		--md-ext-on-changed: #5d1800;
+		--md-ext-changed-container: #842500;
+		--md-ext-on-changed-container: #ffdbd0;
+		--md-ext-now: #7cda9c;
+		--md-ext-on-now: #00391d;
+		--md-ext-now-container: #00522c;
+		--md-ext-on-now-container: #97f7b6;
+	}
+}

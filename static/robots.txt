@@ -1,0 +1,4 @@
+# しおりのページは X-Robots-Tag: noindex で検索に出さない（cloudflare.md 2章）。
+# ここで止めると noindex が読まれず、URL だけが検索に出ることがあるので、止めない
+User-agent: *
+Disallow:

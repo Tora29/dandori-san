@@ -1,0 +1,12 @@
+# Package Managers
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+bun.lock
+bun.lockb
+
+# Miscellaneous
+/static/
+
+# ルールや説明の文は、文ごとの改行や表の形を手でそろえている
+*.md
