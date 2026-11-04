@@ -53,4 +53,6 @@ Node は `.node-version` の版（今は 24）を使う。
 | `.claude/rules/accessibility.md` | アクセシビリティ（WCAG 2.1 AA） |
 | `.claude/rules/sveltekit.md` | SvelteKit と Svelte の書き方 |
 | `.claude/rules/cloudflare.md` | D1・リンク・自動削除・wrangler の設定 |
+| `.claude/rules/code.md` | 言葉とコードの名前・時刻と日にち・置き場所・書き方 |
+| `.claude/rules/features.md` | 画面ごとの動き（当日の判定・変わった所の印・割り勘など） |
 | `.claude/rules/git-workflow.md` | ブランチ・コミット・PR |
