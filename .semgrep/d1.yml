@@ -1,0 +1,16 @@
+rules:
+  - id: d1-sql-built-from-values
+    languages: [typescript, javascript]
+    severity: ERROR
+    message: 値を SQL の文字につなげず、? を書いて bind() で渡す（cloudflare.md 1章）
+    patterns:
+      - pattern-either:
+          - pattern: $DB.prepare($SQL)
+          - pattern: $DB.exec($SQL)
+      - pattern-not: $DB.prepare("...")
+      - pattern-not: $DB.exec("...")
+      # IN (?, ?, ?) の ? を数だけ並べる書き方は、値をつないでいない
+      - pattern-not: $DB.prepare(`...${$IDS.map(() => '?').join(...)}...`)
+    metadata:
+      cwe: 'CWE-89'
+      owasp: 'A03:2021 - Injection'
