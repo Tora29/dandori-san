@@ -1,6 +1,4 @@
-/* 段取りさんのデザイントークン
-   決まりは Material 3 から借りる（design-principles.md 2章）。部品集は使わない。
-   色は、基本の色 #3d6a9e から Material 3 のやり方（TonalSpot）で作った。
+/* 色は、基本の色 #3d6a9e から Material 3 のやり方（TonalSpot）で作った。
    追加の色：changed（朱 #d9480f）＝変わった、now（緑 #2e7d4f）＝いま。
    基本の色を変えるときは、全部の役割を作り直し、下の比も測り直す。
 
