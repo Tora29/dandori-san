@@ -1,4 +1,3 @@
-// アプリ全体で使う型。中身は https://svelte.dev/docs/kit/types#app.d.ts
 declare global {
 	namespace App {
 		interface Platform {
@@ -7,11 +6,6 @@ declare global {
 			caches: CacheStorage;
 			cf?: IncomingRequestCfProperties;
 		}
-
-		// interface Error {}
-		// interface Locals {}
-		// interface PageData {}
-		// interface PageState {}
 	}
 }
 

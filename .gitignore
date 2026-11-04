@@ -1,15 +1,12 @@
 # ---- macOS ----
-# Finder が自動で作るファイル
 .DS_Store
 
 # ---- IDE ----
-# エディタごとの設定
 .zed
 .vscode
 .idea/
 
 # ---- 秘密の値 ----
-# 基本的にコミットしない。
 .env
 .env.*
 !.env.example
