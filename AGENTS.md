@@ -24,6 +24,7 @@
 | 電波がないとき | SvelteKit の Service Worker |
 | テスト | Vitest、`@cloudflare/vitest-plugin`、Playwright、axe |
 | 整形・lint | Prettier、ESLint |
+| 安全の検査 | Semgrep（OWASP Top 10 のルール集と、`.semgrep/` に置く自分のルール）。CI で動かし、見つかったら止める。ルール集は SvelteKit と D1 をほとんど見ないので、D1 は自分のルール、画面は ESLint で補う。ルール集は毎回最新を取るので、コードを変えていなくても急に落ちることがある |
 | 公開 | GitHub Actions から wrangler で |
 | ドメイン | `dandori-san.com` |
 | 問い合わせ | Cloudflare Email Routing（`dandori-san.com` のアドレスに来たメールを、自分のメールに転送する） |
