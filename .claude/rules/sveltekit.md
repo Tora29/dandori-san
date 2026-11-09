@@ -17,7 +17,7 @@ D1・リンク・回数の上限・自動削除・最新を取り直すとき・
 | 使う | 使わない |
 | --- | --- |
 | `vite.config.ts` の `sveltekit({ … })` に書く（`kit` の中に書いていた設定も、ここに直接書く） | `svelte.config.js` |
-| `src/params.ts` に `defineParams` で書く | `src/params/` に置く matcher |
+| `src/params.ts` に `defineParams`（`@sveltejs/kit/params` から import する）で書く | `src/params/` に置く matcher |
 
 - すべての部品を runes で書く。
   `vite.config.ts` の `sveltekit({ compilerOptions })` で、自分のファイルだけ runes にする。
@@ -68,7 +68,7 @@ D1・リンク・回数の上限・自動削除・最新を取り直すとき・
 
 | 使う | 使わない |
 | --- | --- |
-| `Response.json(…)`・`new Response(…)` | `@sveltejs/kit` の `json(…)`・`text(…)` |
+| `Response.json(…)`・`new Response(…)` | `@sveltejs/kit` の `json(…)`・`text(…)`（非推奨） |
 | `error(404, '見つかりません')`（2つ目は文字列だけ。ほかの値は3つ目に渡す） | `error(404, { message: … })` |
 
 ### Service Worker
@@ -81,10 +81,14 @@ D1・リンク・回数の上限・自動削除・最新を取り直すとき・
 
 - `remote functions` は試験的な機能なので使わない
 
-## 2. JS が無くても動く形にする
+## 2. しおりのページとしおりの外のページ
 
-- 書き込みは、フォーム（`<form method="POST">`）と form actions で作る。
-  JS があるときは `use:enhance` で、ページを読み直さずに送る
+しおりの鍵はリンクの `#` の後ろにあり、暗号を端末の中で解く（[Cloudflare の約束事](cloudflare.md) 2章）。
+そのため、しおりのページ（`/s`）は JS が無いと動かない。
+
+- しおりのページで JS が無いときは、`<noscript>` で、JS を有効にすれば見られることを書いたページを出す
+
+- しおりの外のページ（はじめに・しおりを作る前の説明・プライバシー・利用規約など）は、JS が無くても読めるようにする
 
 - ボタンで画面を切り替えるだけの所は、リンク（`<a href>`）にする
 
@@ -95,23 +99,44 @@ D1・リンク・回数の上限・自動削除・最新を取り直すとき・
 - `cloudflare:workers` と `#lib/server/` の中のものは、サーバーで動くファイルからだけ import する。
   画面で動くファイルから import すると、SvelteKit がエラーにする（Vitest の中では、このエラーは出ない）
 
-- 画面に渡すデータは、`load` で返す。
-  画面の中で fetch してデータを取らない
+- しおりのデータは、端末で鍵から札を作ってから、`+server.ts` に取りに行く（JSON）。
+  札は `Authorization` のヘッダーで送り、URL に入れない
 
-- 最新を取り直すときは `refreshAll()` を使う。
+- しおりの書き込みは、端末で中身を確かめて暗号にしてから（`#lib/trip-seal.ts`）、`+server.ts` に JSON で送る。
+  form actions は使わない（サーバーは中身を読めず、暗号にできないため）
+
+- サーバーで作る画面（SSR）に、しおりの中身を入れない。
+  `/s` は `ssr = false` にする
+
+- `#` の鍵は、`load` の中では読めない（`url.hash` を使うと SvelteKit がエラーにする）。
+  部品の中で、`$app/state` の `page.url.hash` を `$derived` で読む。
+  別のリンクを貼られて `#` が変わったときも、読み直す
+
+- しおりの外のページのデータは、`load` で返す
+
+- しおりを取り直すときは、しおりのページの取り直しの関数を使う（`refreshAll()` は、`load` で返すデータにしか効かないため）。
   いつ取り直すかは [Cloudflare の約束事](cloudflare.md) の5章に従う。
-  自分が書いたあとは、`use:enhance` が自動で取り直す
+  自分が書いたあとも、この関数で取り直す
 
 ## 4. 安全
 
 - 人が入れた文字を `{@html}` で出さない。
   そのまま文字として出す（`{value}`）
 
-- 入力の長さと形は、サーバー側（form actions）でも確かめる。
-  画面の入力欄の `maxlength` や `required` だけに頼らない（JS や画面を通らずに送れるため）
+- 中身の決まり（文字数・見えない文字・日にち）は、端末で確かめる。
+  サーバーは中身を読めないので、送られた記録の形だけを確かめる（[Cloudflare の約束事](cloudflare.md) 2章）。
+  画面の入力欄の `maxlength` や `required` だけに頼らず、`#lib/trip-rules.ts` の zod で確かめる
 
-- ほかのサイトからのフォームの送信を防ぐ守り（CSRF）は、SvelteKit 3 では常に有効で、外せない。
-  許す相手を足す `csrf.trustedOrigins` に、`*` などの広い相手を入れない
+- しおりの `+server.ts` は、`Content-Type: application/json` だけを受ける。
+  本文は `unknown` で受け取り、zod で確かめてから使う。
+  しおりは札からだけ決め、本文の `trip_id` などは読まない。
+  返す値とエラーに、札を入れない
+
+- ほかのサイトからの送信を防ぐ SvelteKit の守り（CSRF）は、フォームの形の Content-Type（と Content-Type が無いもの）の POST・PUT・PATCH・DELETE でしか Origin を確かめない。
+  JSON の書き込みはこの守りの外なので、`Origin` が自分のドメインかを `+server.ts` で確かめる。
+  しおりを作る POST は札が無いので、特にこの確かめが要る。
+  `csrf.trustedOrigins` に `'*'` を入れると守りが外れるので、入れない。
+  開発のサーバーでは効かないので、確かめるときは build したもので見る
 
 - 秘密の値を `$app/env/public` に置かない（画面に送られる）
 
@@ -119,9 +144,10 @@ D1・リンク・回数の上限・自動削除・最新を取り直すとき・
 
 | 対象 | テスト |
 | --- | --- |
-| `#lib/server/db/` | `@cloudflare/vitest-plugin` で、本物と同じ動きをする手元の D1 に対して、全部の関数をテストする（D1 はテストのファイルごとに分かれる）。同時に直したときの版の番号の比べ方も、ここで確かめる |
-| 計算と決まり（[使い方の約束事](features.md) の当日の判定・いまと次は・翌日またぎ・変わった所の印・割り勘の精算と端数、[Cloudflare の約束事](cloudflare.md) 4章の消す日） | Vitest の単体テスト。決めたことの場合分けを、1つずつテストにする |
-| 画面 | Playwright で、7つの画面の主な操作。axe（`@axe-core/playwright`）でアクセシビリティ |
+| `#lib/server/db/` | `@cloudflare/vitest-plugin` で、本物と同じ動きをする手元の D1 に対して、全部の関数をテストする（Vitest の project の `db`）。同時に直したときの版の番号の比べ方も、ここで確かめる |
+| 計算と決まり（[使い方の約束事](features.md) の当日の判定・いまと次は・翌日またぎ・変わった所の印・割り勘の精算と端数、[Cloudflare の約束事](cloudflare.md) 4章の消す日、[コードの約束事](code.md) 5章の入力の決まり） | Vitest の単体テスト（project の `unit`）。決めたことの場合分けを、1つずつテストにする |
+| 暗号の形 | Node の暗号の関数で別に作った暗号文を読めるかで固定する（[Cloudflare の約束事](cloudflare.md) 2章） |
+| 画面 | Playwright で、7つの画面の主な操作を、Chromium と WebKit（iPhone）の両方で流す。axe（`@axe-core/playwright`）でアクセシビリティ |
 | マイグレーション | 前の形のデータに当てても壊れないか |
 
 - テストの期待値は、ルールや決めたことから書く。
@@ -136,6 +162,9 @@ D1・リンク・回数の上限・自動削除・最新を取り直すとき・
 
 - 単体のテストは、対象のファイルの隣に `*.test.ts` で置く。
   画面のテストは `e2e/*.e2e.ts` に置く
+
+- D1 のテストは、`#lib/server/db/test-support.ts` の `clearTables` で、テストごとに表を空にする。
+  D1 はテストのファイルごとにしか分かれないため
 
 - `@cloudflare/vitest-pool-workers` は古い名前なので使わない（2026-08 に `@cloudflare/vitest-plugin` へ変わった）
 
