@@ -3,14 +3,35 @@ rules:
     languages: [typescript, javascript]
     severity: ERROR
     message: 値を SQL の文字につなげず、? を書いて bind() で渡す（cloudflare.md 1章）
-    patterns:
-      - pattern-either:
-          - pattern: $DB.prepare($SQL)
-          - pattern: $DB.exec($SQL)
-      - pattern-not: $DB.prepare("...")
-      - pattern-not: $DB.exec("...")
-      # IN (?, ?, ?) の ? を数だけ並べる書き方は、値をつないでいない
-      - pattern-not: $DB.prepare(`...${$IDS.map(() => '?').join(...)}...`)
+    pattern-either:
+      # 埋め込んだ ${…} を1つずつ見て、IN (?, ?, ?) の ? を数だけ並べる形のほかが1つでもあれば当てる
+      - patterns:
+          - pattern-either:
+              - pattern: $DB.prepare(`...${$E}...`)
+              - pattern: $DB?.prepare(`...${$E}...`)
+          # 中身の文字全体が「名前.map(() => '?').join('区切り')」と同じときだけ外す（一部だけ合っても外さない）
+          - metavariable-regex:
+              metavariable: $E
+              regex: '^(?!\w+(\.\w+)*\.map\(\(\) => [''"]\?[''"]\)\.join\([''"][^''"`$]*[''"]\)$)'
+      # 文字をつないだものや、外で組み立てた SQL。D1 のつなぎ方（withSession など）はいろいろあるので、名前では絞らない
+      - patterns:
+          - pattern-either:
+              - pattern: $DB.prepare($SQL)
+              - pattern: $DB?.prepare($SQL)
+          - pattern-not: $DB.prepare("...")
+          - pattern-not: $DB?.prepare("...")
+          - pattern-not: $DB.prepare(`...${$E}...`)
+          - pattern-not: $DB?.prepare(`...${$E}...`)
+      # exec は RegExp にもあるので、D1 らしい名前（db・env.DB・database など）に対して呼んだものだけを見る
+      - patterns:
+          - pattern-either:
+              - pattern: $DB.exec($SQL)
+              - pattern: $DB?.exec($SQL)
+          - pattern-not: $DB.exec("...")
+          - pattern-not: $DB?.exec("...")
+          - metavariable-regex:
+              metavariable: $DB
+              regex: '(?i)^(.*[.?])?(db|d1|database)$'
     metadata:
       cwe: 'CWE-89'
       owasp: 'A03:2021 - Injection'
