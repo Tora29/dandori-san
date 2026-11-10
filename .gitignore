@@ -20,7 +20,7 @@ Thumbs.db
 .claude/settings.local.json
 
 # ---- D1 の中身 ----
-# wrangler d1 export で書き出したものには、しおりの中身と鍵のハッシュが入る。マイグレーションだけを入れる
+# wrangler d1 export で書き出したものには、しおりの暗号文と札のハッシュが入る。マイグレーションだけを入れる
 *.sql
 !/migrations/*.sql
 *.sqlite

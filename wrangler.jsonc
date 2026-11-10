@@ -16,7 +16,7 @@
 			"migrations_dir": "migrations"
 		}
 	],
-	// しおりの鍵の入った URL と時刻の記録を残さないため、ログ・トレース・Logpush は使わない（cloudflare.md 7章）。
+	// 札の入ったヘッダーや、しおりのパスと時刻の記録を残さないため、ログ・トレース・Logpush は使わない（cloudflare.md 7章）。
 	// 新しい Worker では、書かないとログが有効になる
 	"observability": {
 		"enabled": false,

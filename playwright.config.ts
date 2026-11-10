@@ -15,7 +15,7 @@ export default defineConfig({
 	forbidOnly: inCi,
 	projects: [
 		{ name: 'chromium', use: { ...devices['Desktop Chrome'] } },
-		// 使う人の6割ほどが iPhone の Safari のため（design-principles.md 3章）
+		// 使う人の6割ほどが iPhone の Safari で、暗号は端末の中（Web Crypto）で動くため
 		{ name: 'webkit', use: { ...devices['iPhone 15'] } }
 	]
 });
