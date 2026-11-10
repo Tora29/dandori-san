@@ -123,11 +123,6 @@ const oldSvelteSyntax = [
 	}
 ];
 
-const restrictedGlobals = [
-	{ name: 'isNaN', message: 'Number.isNaN を使う' },
-	{ name: 'isFinite', message: 'Number.isFinite を使う' }
-];
-
 export default defineConfig(
 	includeIgnoreFile(gitignorePath),
 	// Semgrep のルールのテスト。わざと穴のある書き方を置いていて、tsconfig にも入れていない
@@ -174,7 +169,8 @@ export default defineConfig(
 			'no-proto': 'error',
 			'no-restricted-globals': [
 				'error',
-				...restrictedGlobals,
+				{ name: 'isNaN', message: 'Number.isNaN を使う' },
+				{ name: 'isFinite', message: 'Number.isFinite を使う' },
 				{
 					name: 'Buffer',
 					// 端末で動くコードに Node の型が混ざっても、tsconfig に node の型があるので tsc では気づけない
@@ -346,13 +342,9 @@ export default defineConfig(
 		rules: { 'no-restricted-syntax': ['error', ...unsafeHtmlSyntax, ...oldKitSyntax] }
 	},
 	{
-		// expect(obj.fn) や expect.any() は、テストの書き方として正しい。
-		// テストでは、順番に書き込んで決まった状態を作るため、ループの中で await してよい
+		// expect(obj.fn) や expect.any() は、テストの書き方として正しい
 		files: ['**/*.test.ts', '**/*.spec.ts', 'e2e/**/*.ts'],
 		rules: {
-			'no-await-in-loop': 'off',
-			// Node の暗号の関数で、決まった値を別に作って比べるため
-			'no-restricted-globals': ['error', ...restrictedGlobals],
 			'@typescript-eslint/no-empty-function': 'off',
 			'@typescript-eslint/no-unsafe-assignment': 'off',
 			'@typescript-eslint/unbound-method': 'off'
