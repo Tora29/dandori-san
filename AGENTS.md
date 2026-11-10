@@ -22,6 +22,7 @@
 | 自動削除 | 削除だけをする小さな Worker（Cron で1日1回） |
 | みんなに知らせる | スマホの共有の画面（`navigator.share`）を開く。送る文は段取りさんが作る。開けないブラウザでは、送る文をコピーする |
 | 電波がないとき | SvelteKit の Service Worker |
+| 入力の確かめ | Zod（フォームの入力など、外から来た値を確かめる） |
 | テスト | Vitest、`@cloudflare/vitest-plugin`、Playwright、axe |
 | 整形・lint | Prettier、ESLint |
 | 安全の検査 | Semgrep（OWASP Top 10 のルール集と、`.semgrep/` に置く自分のルール）。CI で動かし、見つかったら止める。ルール集は SvelteKit と D1 をほとんど見ないので、D1 は自分のルール、画面は ESLint で補う。ルール集は毎回最新を取るので、コードを変えていなくても急に落ちることがある |
@@ -29,7 +30,7 @@
 | ドメイン | `dandori-san.com` |
 | 問い合わせ | Cloudflare Email Routing（`dandori-san.com` のアドレスに来たメールを、自分のメールに転送する） |
 
-使う版は、2026-10 時点の SvelteKit 3 系（3.1 以上）、`@sveltejs/adapter-cloudflare` 8 系、Svelte 5（5.57 以上）、Vite 8、Vitest 5、wrangler 4 系。
+使う版は、2026-10 時点の SvelteKit 3 系（3.1 以上）、`@sveltejs/adapter-cloudflare` 8 系、Svelte 5（5.57 以上）、Vite 8、Vitest 5、wrangler 4 系、Zod 4。
 Node は `.node-version` の版（今は 24）を使う。
 版を上げるかは人が決める。
 `package-lock.json` はコミットする。
