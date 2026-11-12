@@ -93,6 +93,11 @@ const oldSvelteSyntax = [
 		selector: 'SvelteElement[name.name="slot"]',
 		message: `{@render children?.()} と snippet を使う。${oldSvelte}`
 	},
+	{
+		selector:
+			':matches(SvelteAttribute[key.name="slot"], SvelteElement[name.name="svelte:fragment"])',
+		message: `{#snippet …} を使う。${oldSvelte}`
+	},
 	{ selector: 'SvelteReactiveStatement', message: `$derived か $effect を使う。${oldSvelte}` },
 	{
 		selector: 'ExportNamedDeclaration > VariableDeclaration[kind="let"]',
@@ -110,6 +115,11 @@ const oldSvelteSyntax = [
 		// a11y などのコンパイラの警告を、コメントで黙らせないため
 		selector: 'SvelteHTMLComment[value=/svelte-ignore/]',
 		message: 'svelte-ignore で警告を消さない。警告の元を直す'
+	},
+	{
+		// svelte/comment-directive を切ったので、書いても効かない。効いたと思いこまないよう止める
+		selector: 'SvelteHTMLComment[value=/^\\s*eslint-(disable|enable)/]',
+		message: 'コメントで規則を外さない。外すときは eslint.config.js に書く'
 	}
 ];
 
@@ -135,10 +145,6 @@ export default defineConfig(
 			}
 		},
 		rules: {
-			// 定義の無い変数は TypeScript が見つけるので、ESLint では見ない
-			// https://typescript-eslint.io/troubleshooting/faqs/eslint/#i-get-errors-from-the-no-undef-rule-about-global-variables-not-being-defined-even-though-there-are-no-typescript-errors
-			'no-undef': 'off',
-
 			curly: 'error',
 			eqeqeq: 'error',
 			'default-case-last': 'error',
@@ -164,8 +170,15 @@ export default defineConfig(
 			'no-restricted-globals': [
 				'error',
 				{ name: 'isNaN', message: 'Number.isNaN を使う' },
-				{ name: 'isFinite', message: 'Number.isFinite を使う' }
+				{ name: 'isFinite', message: 'Number.isFinite を使う' },
+				{
+					name: 'Buffer',
+					// 端末で動くコードに Node の型が混ざっても、tsconfig に node の型があるので tsc では気づけない
+					message: 'Node にしか無い。Uint8Array と #lib/crypto/base64url.js を使う'
+				}
 			],
+			// <script> の中の JS コメントでも、Svelte のコンパイラの警告を黙らせられるため
+			'no-warning-comments': ['error', { terms: ['svelte-ignore'], location: 'start' }],
 			'no-return-assign': 'error',
 			'no-script-url': 'error',
 			'no-self-compare': 'error',
@@ -290,6 +303,12 @@ export default defineConfig(
 		}
 	},
 	{
+		// 定義の無い変数は TypeScript が見つけるので、ESLint では見ない
+		// https://typescript-eslint.io/troubleshooting/faqs/eslint/#i-get-errors-from-the-no-undef-rule-about-global-variables-not-being-defined-even-though-there-are-no-typescript-errors
+		files: ['**/*.{ts,svelte}'],
+		rules: { 'no-undef': 'off' }
+	},
+	{
 		files: ['**/*.svelte', '**/*.svelte.ts', '**/*.svelte.js'],
 		languageOptions: {
 			parserOptions: {
@@ -304,6 +323,10 @@ export default defineConfig(
 	},
 	{
 		files: ['**/*.svelte'],
+		languageOptions: {
+			// svelte.config.js が無いと、ルーンを使っていない部品を runes として見ない。build はすべて runes で読むので合わせる
+			parserOptions: { svelteFeatures: { runes: true } }
+		},
 		rules: {
 			'no-restricted-syntax': [
 				'error',
@@ -330,6 +353,7 @@ export default defineConfig(
 	{
 		// tsconfig に入れていない設定のファイル
 		files: ['**/*.{js,mjs,cjs}'],
+		ignores: ['**/*.svelte.js'],
 		extends: [ts.configs.disableTypeChecked]
 	}
 );

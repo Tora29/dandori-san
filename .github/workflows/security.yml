@@ -1,0 +1,30 @@
+name: security
+on:
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: '30 0 * * 1' # 毎週月曜 9:30（日本時間）
+permissions:
+  actions: read
+  contents: read
+  security-events: write
+jobs:
+  semgrep:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    container: semgrep/semgrep@sha256:2e45517a85e13a9cca14a2a00df6bb48affd66b8ebfae1b0991cd57578362fb0 # 2026-11-05 の latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - run: semgrep scan --config p/default --metrics=off --error
+  osv-pr:
+    if: github.event_name == 'pull_request'
+    uses: google/osv-scanner-action/.github/workflows/osv-scanner-reusable-pr.yml@b1d267aea5211fa648d9d442fa64b90dbdcbdd36 # v2.7.0
+    with:
+      upload-sarif: false
+  osv-weekly:
+    if: github.event_name == 'schedule'
+    uses: google/osv-scanner-action/.github/workflows/osv-scanner-reusable.yml@b1d267aea5211fa648d9d442fa64b90dbdcbdd36 # v2.7.0
+    with:
+      upload-sarif: false

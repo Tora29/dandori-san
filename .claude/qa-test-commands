@@ -1,0 +1,5 @@
+npm run check
+npm run lint
+npx vitest --run
+semgrep scan --config p/default --config .semgrep/d1.yml --config .semgrep/hidden-characters.yml --exclude .semgrep --metrics=off --error --quiet .
+osv-scanner scan -r .

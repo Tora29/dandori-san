@@ -8,6 +8,22 @@
 		"binding": "ASSETS",
 		"directory": ".svelte-kit/cloudflare"
 	},
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "dandori-san",
+			"database_id": "331ecced-f0a8-4c58-8e30-7b0e277dce52",
+			"migrations_dir": "migrations"
+		}
+	],
+	// 札の入ったヘッダーや、しおりのパスと時刻の記録を残さないため、ログ・トレース・Logpush は使わない（cloudflare.md 7章）。
+	// 新しい Worker では、書かないとログが有効になる
+	"observability": {
+		"enabled": false,
+		"logs": { "enabled": false, "invocation_logs": false },
+		"traces": { "enabled": false }
+	},
+	"logpush": false,
 	"workers_dev": true,
 	"preview_urls": false
 }

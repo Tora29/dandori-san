@@ -1,4 +1,4 @@
-import { defineConfig } from 'vitest/config';
+import { defineConfig } from 'vite';
 import adapter from '@sveltejs/adapter-cloudflare';
 import { sveltekit } from '@sveltejs/kit/vite';
 
@@ -13,20 +13,9 @@ export default defineConfig({
 			adapter: adapter()
 		})
 	],
-	test: {
-		expect: { requireAssertions: true },
-		// 最初のテストを書くまでは、テストが無くても通す
-		passWithNoTests: true,
-		projects: [
-			{
-				extends: './vite.config.ts',
-				test: {
-					name: 'server',
-					environment: 'node',
-					include: ['src/**/*.{test,spec}.{js,ts}'],
-					exclude: ['src/**/*.svelte.{test,spec}.{js,ts}']
-				}
-			}
-		]
+	build: {
+		// 正規表現の v フラグ（Safari 17・Chrome 112・Firefox 116 から）と Intl.Segmenter（Firefox 125 から）を使うため。
+		// iOS 16 の端末は対象にしない（2026-11 に決めた）
+		target: ['es2023', 'chrome120', 'edge120', 'firefox125', 'safari17', 'ios17']
 	}
 });

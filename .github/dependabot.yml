@@ -1,0 +1,39 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    # 出たばかりの版に悪いコードが入っていたとき、広まる前に避けるため（.npmrc の min-release-age と同じ）
+    cooldown:
+      default-days: 7
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: chore
+    ignore:
+      # CI の Playwright のイメージ（ci.yml）と版をそろえる決まりなので、イメージと一緒に手で上げる
+      - dependency-name: '@playwright/test'
+    groups:
+      svelte:
+        patterns: ['svelte', 'svelte-*', '@sveltejs/*', 'vite', 'vitest', 'prettier-plugin-svelte']
+      lint:
+        patterns:
+          [
+            'eslint',
+            'eslint-*',
+            '@eslint/*',
+            'typescript',
+            'typescript-eslint',
+            'prettier',
+            'globals'
+          ]
+      cloudflare:
+        patterns: ['wrangler', '@cloudflare/*']
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+    commit-message:
+      prefix: ci

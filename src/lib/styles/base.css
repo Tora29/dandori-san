@@ -37,8 +37,9 @@ ul {
 	padding: 0;
 }
 
-ol,
-ul {
+/* 印を消した一覧は、Safari の VoiceOver が一覧として読まないので、role="list" を付けたものだけ消す */
+ul[role='list'],
+ol[role='list'] {
 	list-style: none;
 }
 
@@ -64,4 +65,11 @@ ul {
 /* 言葉のまとまりの途中で折り返さない（design-principles.md 8章） */
 .nb {
 	display: inline-block;
+	/* 200% に広げた 320px の幅で、長いまとまりが横にはみ出さないように（accessibility.md 3章） */
+	max-width: 100%;
+}
+
+/* app.html の入れ物。CSP でインラインの style を許さずに済むよう、クラスで書く */
+.app {
+	display: contents;
 }

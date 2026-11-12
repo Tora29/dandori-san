@@ -1,0 +1,26 @@
+# ruleid: hidden-characters
+const a = 'はると​';
+# ruleid: hidden-characters
+// ‮ 向きを変える文字
+# ruleid: hidden-characters
+const b = 'が';
+# ok: hidden-characters
+const c = 'はると\u200B';
+# ok: hidden-characters
+const d = 'がく';
+# ruleid: hidden-characters
+const x = 'a️b'; // 異体字セレクタ
+# ruleid: hidden-characters
+const x = 'a󠄀b'; // 異体字セレクタ（補助）
+# ruleid: hidden-characters
+const x = 'a󠁁b'; // タグの文字
+# ruleid: hidden-characters
+const x = 'a b'; // 行区切り
+# ruleid: hidden-characters
+const x = 'a b'; // 段落区切り
+# ruleid: hidden-characters
+const x = 'a᠎b'; // モンゴル語の母音区切り
+# ruleid: hidden-characters
+const x = 'a͏b'; // 結合文字をつながない印
+# ruleid: hidden-characters
+const x = 'a￹b'; // ルビの印

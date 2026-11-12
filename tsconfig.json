@@ -5,8 +5,13 @@
 		// コードは全部 TypeScript で書く。JS まで確かめると、ビルドした後に
 		// wrangler types が引き込む .svelte-kit/cloudflare/_worker.js でエラーになる
 		"checkJs": false,
-		"types": ["$app/types", "node", "./worker-configuration.d.ts"]
+		"types": [
+			"$app/types",
+			"node",
+			"./worker-configuration.d.ts",
+			"@cloudflare/vitest-plugin/types"
+		]
 	},
-	"include": ["e2e", "src", "vite.config.ts", "playwright.config.ts"],
+	"include": ["e2e", "src", "vite.config.ts", "vitest.config.ts", "playwright.config.ts"],
 	"exclude": ["src/service-worker"]
 }

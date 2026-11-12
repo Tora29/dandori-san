@@ -1,0 +1,34 @@
+{
+	"env": {
+		"WRANGLER_SEND_METRICS": "false"
+	},
+	"permissions": {
+		"allow": ["Read(~/knowledge/**)", "Bash(semgrep scan *)", "Bash(osv-scanner scan *)"],
+		"deny": ["Edit(~/knowledge/**)", "Edit(~/.claude-logs/qa-state/**)"]
+	},
+	"enabledPlugins": {
+		"foundation@claude-dev-foundation": true
+	},
+	"extraKnownMarketplaces": {
+		"claude-dev-foundation": {
+			"source": {
+				"source": "github",
+				"repo": "Tora29/claude-dev-foundation"
+			},
+			"autoUpdate": true
+		}
+	},
+	"sandbox": {
+		"enabled": true,
+		"failIfUnavailable": true,
+		"allowUnsandboxedCommands": false,
+		"network": {
+			"allowedDomains": ["github.com", "api.github.com"],
+			"allowLocalBinding": true
+		},
+		"filesystem": {
+			"allowWrite": ["~/Library/Preferences/.wrangler"]
+		},
+		"excludedCommands": ["gh *", "semgrep *", "osv-scanner *", "git push *"]
+	}
+}

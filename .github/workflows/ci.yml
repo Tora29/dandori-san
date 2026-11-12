@@ -8,6 +8,11 @@ on:
 permissions:
   contents: read
 
+# 同じ PR に続けて push したら、古い方の実行を止める。main への push は止めない
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   check:
     runs-on: ubuntu-latest
@@ -26,7 +31,10 @@ jobs:
         with:
           node-version-file: .node-version
           cache: npm
-      - run: npm ci
+      # パッケージの中のコードを動かす前に、npm に公開されたものと同じかを確かめるため、スクリプトを止めて入れる
+      - run: npm ci --ignore-scripts
+      - run: npm audit signatures
+      - run: npm run prepare
       - run: npm run check
       - run: npm run lint
       - run: npm test
@@ -36,11 +44,15 @@ jobs:
     timeout-minutes: 10
     container:
       image: semgrep/semgrep:1.182.1@sha256:451b3d875c00dac7ed5db5293e584a07de11449a409c10b3c2d2652f429630b6
+    # --test の実行には --metrics=off を付けられないので、計測を入れない決まり（AGENTS.md）を環境の変数で守る
+    env:
+      SEMGREP_SEND_METRICS: off
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
       - run: semgrep --test --config .semgrep/d1.yml .semgrep/d1.ts
+      - run: semgrep --test --config .semgrep/hidden-characters.yml .semgrep/hidden-characters.txt
       # .semgrep/ の中は、わざと穴を書いたルールのテスト。
       # --metrics=off は、使われ方の計測を入れないと決めているため（AGENTS.md）
-      - run: semgrep scan --config p/owasp-top-ten --config .semgrep/d1.yml --exclude .semgrep --metrics=off --error
+      - run: semgrep scan --config p/owasp-top-ten --config .semgrep/d1.yml --config .semgrep/hidden-characters.yml --exclude .semgrep --metrics=off --error
