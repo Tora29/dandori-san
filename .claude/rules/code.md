@@ -146,6 +146,7 @@ Workers は UTC で動き、端末のタイムゾーンもまちまちなので�
 | 端末とサーバーのあいだでやり取りする記録の形 | `#lib/trip-records.ts` |
 | サーバーだけで動くもの（札のハッシュなど） | `#lib/server/`（札のハッシュは `#lib/server/access.ts`） |
 | D1 のテストで使う部品 | `#lib/server/db/test-support.ts`（`cloudflare:test` を読むので、本番のコードから読むと build で止まる） |
+| D1 のテストで動かす、何もしない Worker | `#lib/server/db/test-worker.ts`（`wrangler.jsonc` の `main` は build したあとにしか無いため、代わりに渡す） |
 | 画面の部品 | `#lib/components/` |
 | トークンと全体の CSS | `#lib/styles/` |
 
